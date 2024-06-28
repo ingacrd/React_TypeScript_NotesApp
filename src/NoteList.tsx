@@ -63,65 +63,66 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
             </Stack>
         </Col>
     </Row>
-    <Form>
-        <Row>
-            <Col><h3>Search by:</h3></Col>
-        </Row>
-        <Row className="mb-4">
+    <Form >
+        <Row className="mb-2 small">
             <Col>
                 <Form.Group controlId="title">
                     <Form.Label>Title</Form.Label>
                     <Form.Control type="text" value={title} onChange={e => setTitle(e.target.value)}/>
                 </Form.Group>
-                
             </Col>
+            <Col>
+                <Form.Group controlId="tags">
+                    <Form.Label>Tags</Form.Label>
+                        <ReactSelect 
+                            
+                            value={selectedTags.map(tag => {
+                                return {label: tag.label, value: tag.id}
+                        })} 
+                        options={availableTags.map(tag=>{
+                            return {label: tag.label, value: tag.id}
+                        })}
+                        onChange={tags=> {
+                            setSelectedTags(tags.map(tag=>{
+                                return {label:tag.label, id:tag.value}
+                            }))
+                        }}
+                        isMulti
+                        />
+                </Form.Group>
+            </Col> 
+                
+         </Row>
+         <Row className="mb-2 small">
             <Col>
                 <Form.Group controlId="content">
                     <Form.Label>Content</Form.Label>
                     <Form.Control type="text" value={content} onChange={e => setContent(e.target.value)}/>
                 </Form.Group>
             </Col>
+         </Row>
+         <Row className="mb-4 small">
             <Col>
-                    <Form.Group controlId="tags">
-                    <Form.Label>Tags</Form.Label>
-                    <ReactSelect 
-                        
-                        value={selectedTags.map(tag => {
-                            return {label: tag.label, value: tag.id}
-                    })} 
-                    options={availableTags.map(tag=>{
-                        return {label: tag.label, value: tag.id}
-                    })}
-                    onChange={tags=> {
-                        setSelectedTags(tags.map(tag=>{
-                            return {label:tag.label, id:tag.value}
-                        }))
-                    }}
-                    isMulti
-                    />
-                    </Form.Group>
-                </Col> 
-                <Col>
-                    <Form.Group controlId="startDate">
-                        <Form.Label>Start Date</Form.Label>
+                <Form.Group controlId="startDate">
+                    <Form.Label>Start Date</Form.Label>
                         <Form.Control 
                             type="date" 
                             value={startDate ? startDate.toISOString().split('T')[0] : ''} 
                             onChange={e => setStartDate(e.target.value ? new Date(e.target.value) : null)} 
                         />
-                    </Form.Group>
-                </Col>
-                <Col>
-                    <Form.Group controlId="endDate">
-                        <Form.Label>End Date</Form.Label>
+                </Form.Group>
+            </Col>
+            <Col>
+                <Form.Group controlId="endDate">
+                    <Form.Label>End Date</Form.Label>
                         <Form.Control 
                             type="date" 
                             value={endDate ? endDate.toISOString().split('T')[0] : ''} 
                             onChange={e => setEndDate(e.target.value ? new Date(e.target.value) : null)} 
                         />
-                    </Form.Group>
-                </Col>
-            </Row>
+                </Form.Group>
+            </Col>
+         </Row>
     </Form>
     <Row xs={1} sm={2} lg={3} xl={4} className="g-3">
         {/* <pre>{JSON.stringify(filteredNotes,undefined,2)}</pre> */}
