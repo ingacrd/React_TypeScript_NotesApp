@@ -9,6 +9,7 @@ type SimplifiedNote = {
     tags: Tag[]
     title: string
     id:string
+    created_at: string
 }
 
 type NoteListProps = {
@@ -30,24 +31,23 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
     const [selectedTags, setSelectedTags] = useState<Tag[]>([])
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("");
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
     const [editTagsModalIsOpen, setEditTagsModalIsOpen] = useState(false)
 
     const filteredNotes = useMemo(() =>{
         return notes.filter(note => {
         const matchesTitle = title === "" || note.title.toLowerCase().includes(title.toLowerCase());
         const matchesContent = content === "" || note.markdown.toLowerCase().includes(content.toLowerCase());
+        const matchesStartDate = !startDate || new Date(note.created_at) >= startDate;
+        const matchesEndDate = !endDate || new Date(note.created_at) <= endDate;
         const matchesTags = selectedTags.length ===0||
                 selectedTags.every(tag=>
                     note.tags.some(noteTag => noteTag.id === tag.id));
-       
-        return matchesTitle && matchesContent && matchesTags;
-        // return notes.filter(note => {
-        //     return(title === ""|| note.title.toLowerCase().includes(title.toLowerCase())) && 
-            // (selectedTags.length ===0||
-            //     selectedTags.every(tag=>
-            //         note.tags.some(noteTag => noteTag.id === tag.id)))
+        return matchesTitle && matchesContent && matchesTags && matchesStartDate && matchesEndDate;
+
         })
-    },[title, content, selectedTags])
+    },[title, content, selectedTags,startDate,endDate])
 
     return ( <>
     <Row className="align-items-center mb-4">
@@ -101,12 +101,33 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
                     />
                     </Form.Group>
                 </Col> 
+                <Col>
+                    <Form.Group controlId="startDate">
+                        <Form.Label>Start Date</Form.Label>
+                        <Form.Control 
+                            type="date" 
+                            value={startDate ? startDate.toISOString().split('T')[0] : ''} 
+                            onChange={e => setStartDate(e.target.value ? new Date(e.target.value) : null)} 
+                        />
+                    </Form.Group>
+                </Col>
+                <Col>
+                    <Form.Group controlId="endDate">
+                        <Form.Label>End Date</Form.Label>
+                        <Form.Control 
+                            type="date" 
+                            value={endDate ? endDate.toISOString().split('T')[0] : ''} 
+                            onChange={e => setEndDate(e.target.value ? new Date(e.target.value) : null)} 
+                        />
+                    </Form.Group>
+                </Col>
             </Row>
     </Form>
     <Row xs={1} sm={2} lg={3} xl={4} className="g-3">
+        {/* <pre>{JSON.stringify(filteredNotes,undefined,2)}</pre> */}
         {filteredNotes.map(note => (
             <Col key={note.id}>
-                <NoteCard id={note.id} title={note.title} tags={note.tags}/>
+                <NoteCard id={note.id} title={note.title} tags={note.tags} created_at = {note.created_at}/>
             </Col>
         ))}
     </Row>
@@ -121,7 +142,7 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
     )  
 }
 
-function NoteCard({id,title,tags}: SimplifiedNote){
+function NoteCard({id,title,tags,created_at}: SimplifiedNote){
     return (
         <Card as={Link} to={`/${id}`} className={`h-100 text-reset text-decoration-none ${styles.card}`}>
             <Card.Body>
@@ -141,6 +162,7 @@ function NoteCard({id,title,tags}: SimplifiedNote){
                             ))}
                         </Stack>
                     )}
+                    <span className="text-left text-muted small">Created at: {created_at.split('T')[0]}</span>
                 </Stack>
             </Card.Body>
         </Card>

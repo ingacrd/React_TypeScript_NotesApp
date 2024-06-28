@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css"
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { Container } from "react-bootstrap"
 import { Routes, Route, Navigate } from "react-router-dom"
 import { NewNote } from "./NewNote"
@@ -25,29 +25,33 @@ export type RawNoteData = {
   title: string
   markdown: string
   tagIds: string[]
+  created_at: string
   
 }
 export type NoteData = {
   title: string
   markdown: string
   tags: Tag[]
-
+  created_at: string
 }
 export type Tag = {
   id: string
   label: string
 }
 
-initializeLocalStorage();
 
 function App() {
+  
+useEffect(() => {
+  initializeLocalStorage();
+}, [])
 
 const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", []);
 const [tags, setTags] = useLocalStorage<Tag[]>("TAGS", []);
 
 const notesWithTags = useMemo(() => {
   return notes.map(note => {
-    return{...note, tags: tags.filter(tag => note.tagIds.includes(tag.id)),created_at: new Date().toISOString()}
+    return{...note, tags: tags.filter(tag => note.tagIds.includes(tag.id))}
   })
 }, [notes, tags])
 

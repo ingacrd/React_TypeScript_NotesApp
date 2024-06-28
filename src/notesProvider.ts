@@ -1,7 +1,18 @@
 import { v4 as uuidV4 } from "uuid";
 import { RawNote, Tag } from "./App";
 
+function getRandomDate() {
+  const date = new Date();
+  const offset = Math.floor(Math.random() * 30);
+  date.setDate(date.getDate() - offset);
+  return date.toISOString();
+}
+
 export function initializeLocalStorage() {
+  if (localStorage.getItem("NOTES") && localStorage.getItem("TAGS")) {
+    return;
+  }
+
   const initialTags: Tag[] = [
     { id: uuidV4(), label: "Work" },
     { id: uuidV4(), label: "Personal" },
@@ -35,6 +46,8 @@ Overall, the meeting was productive and all major points were covered.
 [Project A Documentation](https://example.com/docs/project-a)
 `,
       tagIds: [initialTags[0].id],
+      created_at: getRandomDate(),
+
     },
     {
       id: uuidV4(),
@@ -62,6 +75,7 @@ Today was a good day, felt productive and energized.
 > "The only way to do great work is to love what you do." - Steve Jobs
 `,
       tagIds: [initialTags[1].id],
+      created_at: getRandomDate(),
     },
     {
       id: uuidV4(),
@@ -81,6 +95,7 @@ Today was a good day, felt productive and energized.
 [Quarterly Report Template](https://example.com/templates/report)
 `,
       tagIds: [initialTags[2].id],
+      created_at: getRandomDate(),
     },
     {
       id: uuidV4(),
@@ -107,6 +122,7 @@ Today was a good day, felt productive and energized.
 [Design Prototypes](https://example.com/designs)
 `,
       tagIds: [initialTags[0].id, initialTags[2].id],
+      created_at: getRandomDate(),
     },
     {
       id: uuidV4(),
@@ -147,6 +163,7 @@ console.log('Hello, world!');
 ![Markdown Logo](https://markdown-here.com/img/icon256.png)
 `,
       tagIds: [initialTags[1].id, initialTags[2].id],
+      created_at: getRandomDate(),
     },
   ];
 
@@ -154,5 +171,4 @@ console.log('Hello, world!');
   localStorage.setItem("TAGS", JSON.stringify(initialTags));
 }
 
-// Run the initialization function
 initializeLocalStorage();

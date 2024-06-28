@@ -33,6 +33,7 @@ export function NoteForm({
             title: titleRef.current!.value,
             markdown: markdownRef.current!.value,
             tags: selectedTags,
+            created_at: new Date().toISOString(),
         })
 
         navigate("..")
