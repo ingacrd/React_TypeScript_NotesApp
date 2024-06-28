@@ -29,16 +29,25 @@ type EditTagsModalProps = {
 export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteListProps){
     const [selectedTags, setSelectedTags] = useState<Tag[]>([])
     const [title, setTitle] = useState("")
+    const [content, setContent] = useState("");
     const [editTagsModalIsOpen, setEditTagsModalIsOpen] = useState(false)
 
     const filteredNotes = useMemo(() =>{
         return notes.filter(note => {
-            return(title === ""|| note.title.toLowerCase().includes(title.toLowerCase())) && 
-            (selectedTags.length ===0||
+        const matchesTitle = title === "" || note.title.toLowerCase().includes(title.toLowerCase());
+        const matchesContent = content === "" || note.markdown.toLowerCase().includes(content.toLowerCase());
+        const matchesTags = selectedTags.length ===0||
                 selectedTags.every(tag=>
-                    note.tags.some(noteTag => noteTag.id === tag.id)))
+                    note.tags.some(noteTag => noteTag.id === tag.id));
+       
+        return matchesTitle && matchesContent && matchesTags;
+        // return notes.filter(note => {
+        //     return(title === ""|| note.title.toLowerCase().includes(title.toLowerCase())) && 
+            // (selectedTags.length ===0||
+            //     selectedTags.every(tag=>
+            //         note.tags.some(noteTag => noteTag.id === tag.id)))
         })
-    },[title, selectedTags, notes])
+    },[title, content, selectedTags])
 
     return ( <>
     <Row className="align-items-center mb-4">
@@ -55,6 +64,9 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
         </Col>
     </Row>
     <Form>
+        <Row>
+            <Col><h3>Search by:</h3></Col>
+        </Row>
         <Row className="mb-4">
             <Col>
                 <Form.Group controlId="title">
@@ -64,7 +76,13 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
                 
             </Col>
             <Col>
-            <Form.Group controlId="tags">
+                <Form.Group controlId="content">
+                    <Form.Label>Content</Form.Label>
+                    <Form.Control type="text" value={content} onChange={e => setContent(e.target.value)}/>
+                </Form.Group>
+            </Col>
+            <Col>
+                    <Form.Group controlId="tags">
                     <Form.Label>Tags</Form.Label>
                     <ReactSelect 
                         
@@ -80,10 +98,10 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
                         }))
                     }}
                     isMulti
-                />
-                </Form.Group>
-            </Col>
-        </Row>
+                    />
+                    </Form.Group>
+                </Col> 
+            </Row>
     </Form>
     <Row xs={1} sm={2} lg={3} xl={4} className="g-3">
         {filteredNotes.map(note => (

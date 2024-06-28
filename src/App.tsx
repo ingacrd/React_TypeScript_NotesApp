@@ -9,6 +9,8 @@ import { NoteList } from "./NoteList"
 import { NoteLayout } from "./NoteLayout"
 import { Nota } from "./Nota"
 import { EditNote } from "./EditNote"
+import { initializeLocalStorage } from "./notesProvider"
+
 
 
 export type Note = {
@@ -23,24 +25,29 @@ export type RawNoteData = {
   title: string
   markdown: string
   tagIds: string[]
+  
 }
 export type NoteData = {
   title: string
   markdown: string
   tags: Tag[]
+
 }
 export type Tag = {
   id: string
   label: string
 }
 
+initializeLocalStorage();
+
 function App() {
-const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES",[])
-const [tags, setTags] = useLocalStorage<Tag[]>("TAGS",[])
+
+const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", []);
+const [tags, setTags] = useLocalStorage<Tag[]>("TAGS", []);
 
 const notesWithTags = useMemo(() => {
   return notes.map(note => {
-    return{...note, tags: tags.filter(tag => note.tagIds.includes(tag.id))}
+    return{...note, tags: tags.filter(tag => note.tagIds.includes(tag.id)),created_at: new Date().toISOString()}
   })
 }, [notes, tags])
 
@@ -48,7 +55,7 @@ function onCreateNone({tags, ...data}: NoteData) {
   setNotes(prevNotes => {
     return [
       ...prevNotes,
-       {...data, id: uuidV4(), tagIds: tags.map(tag => tag.id)},
+       {...data, id: uuidV4(), tagIds: tags.map(tag => tag.id), created_at: new Date().toISOString()},
     ]
   })
 }
