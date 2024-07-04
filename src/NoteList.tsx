@@ -163,7 +163,7 @@ function NoteCard({id,title,tags,created_at}: SimplifiedNote){
                             ))}
                         </Stack>
                     )}
-                    <span className="text-left text-muted small">Created at: {created_at.split('T')[0]}</span>
+                    <span className="text-left text-muted small">Created at: {created_at ? created_at.split('T')[0] : 'N/A'}</span>
                 </Stack>
             </Card.Body>
         </Card>
